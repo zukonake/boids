@@ -5,4 +5,5 @@ authors = ["zukonake <zukonake@protonmail.com>"]
 
 [dependencies]
 rand = "0.3"
+cgmath = "0.15.0"
 glium = "*"
