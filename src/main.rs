@@ -41,7 +41,7 @@ const BOIDS_SIZE: f32 = 10.0;
 const BOIDS_SEPARATION_AREA: f32 =
     std::f32::consts::PI * BOIDS_SEPARATION_RANGE * BOIDS_SEPARATION_RANGE;
 const BOIDS_MAX_DENSITY: f32 = 5.0 / BOIDS_SEPARATION_AREA;
-const BOIDS_CHAOS: f32 = 0.1;
+const BOIDS_CHAOS: f32 = 0.01;
 
 #[derive(Copy, Clone)]
 struct Vertex
@@ -206,21 +206,30 @@ fn simulate(boids: &mut [Boid; BOIDS_NUMBER], map_size: &(f32, f32)) -> ()
     }
 }
 
-fn rotate_point(point: (f32, f32), center: (f32, f32)) -> (f32, f32)
+fn rotate_point((px, py): (f32, f32), (cx, cy): (f32, f32), angle: f32) -> (f32, f32)
 {
-    
+    let x = angle.cos() * (px - cx) - angle.sin() * (py - cy) + cx;
+    let y = angle.sin() * (px - cx) + angle.cos() * (py - cy) + cy;
+    (x, y)
 }
 
 fn update_vertices(boids: &[Boid; BOIDS_NUMBER], vertices: &mut [Vertex]) -> ()
 {
-    for i in 0..BOIDS_NUMBER
+    let mut iv = 0usize;
+    for i in boids.iter()
     {
-        vertices[(i * 3)].position.0 = boids[i].position.0;
-        vertices[(i * 3)].position.1 = boids[i].position.1;
-        vertices[(i * 3) + 1].position.0 = boids[i].position.0 - (BOIDS_SIZE / 2.0);
-        vertices[(i * 3) + 1].position.1 = boids[i].position.1 + BOIDS_SIZE;
-        vertices[(i * 3) + 2].position.0 = boids[i].position.0 + (BOIDS_SIZE / 2.0);
-        vertices[(i * 3) + 2].position.1 = boids[i].position.1 + BOIDS_SIZE;
+        let center = (i.position.0 - (3f32.sqrt() / 2.0), i.position.1);
+        let angle = i.direction.1.atan2(i.direction.0);
+        let vertex0 = i.position;
+        let vertex1 = (i.position.0 - BOIDS_SIZE, i.position.1 - (BOIDS_SIZE / 2.0));
+        let vertex2 = (i.position.0 - BOIDS_SIZE, i.position.1 + (BOIDS_SIZE / 2.0));
+        let rotated0 = rotate_point(vertex0, center, angle);
+        let rotated1 = rotate_point(vertex1, center, angle);
+        let rotated2 = rotate_point(vertex2, center, angle);
+        vertices[(iv * 3)].position = rotated0;
+        vertices[(iv * 3) + 1].position = rotated1;
+        vertices[(iv * 3) + 2].position = rotated2;
+        iv += 1;
     }
 }
 
