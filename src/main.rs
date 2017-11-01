@@ -10,8 +10,6 @@ use cgmath::Vector2;
 use cgmath::MetricSpace;
 use cgmath::EuclideanSpace;
 use cgmath::InnerSpace;
-use cgmath::Rad;
-use cgmath::Angle;
 use glium::glutin;
 use glium::glutin::Event;
 use glium::glutin::WindowEvent;
@@ -188,7 +186,7 @@ fn simulate(boids: &mut [Boid; BOIDS_NUMBER], map_size: &Vector2<f32>) -> ()
     }
 }
 
-fn rotate_point(point: Point2<f32>, center: Point2<f32>, angle: Rad<f32>) -> Point2<f32>
+fn rotate_point(point: Point2<f32>, center: Point2<f32>, angle: f32) -> Point2<f32>
 {
     let (px, py) = point.into();
     let (cx, cy) = center.into();
@@ -207,10 +205,10 @@ fn update_vertices(boids: &[Boid; BOIDS_NUMBER], vertices: &mut [Vertex]) -> ()
     for i in boids.iter()
     {
         let center = i.position + Vector2::new(-(3f32.sqrt() / 2.0), 0.0);
-        let angle = i.direction.angle(Vector2::new(1.0, 0.0));
+        let angle = i.direction.y.atan2(i.direction.x);
         let vertex0 = i.position;
-        let vertex1 = i.position + Vector2::new(BOIDS_SIZE, -(BOIDS_SIZE / 2.0));
-        let vertex2 = i.position + Vector2::new(BOIDS_SIZE, (BOIDS_SIZE / 2.0));
+        let vertex1 = i.position + Vector2::new(-BOIDS_SIZE, -(BOIDS_SIZE / 2.0));
+        let vertex2 = i.position + Vector2::new(-BOIDS_SIZE, (BOIDS_SIZE / 2.0));
         let rotated0 = rotate_point(vertex0, center, angle);
         let rotated1 = rotate_point(vertex1, center, angle);
         let rotated2 = rotate_point(vertex2, center, angle);
