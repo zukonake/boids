@@ -260,7 +260,7 @@ fn main()
 
     let vertices: [Vertex; BOIDS_NUMBER * 3] = [Vertex::default(); BOIDS_NUMBER * 3];
 
-    let mut vertex_buffer = glium::VertexBuffer::new(&display, &vertices).unwrap();
+    let mut vertex_buffer = glium::VertexBuffer::dynamic(&display, &vertices).unwrap();
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
 
     let mut shader_file = fs::File::open("glsl/vertex.vert")
